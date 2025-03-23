@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Mail\LoginAlertEmail; // ✅ Importar Mailable
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail; // ✅ Importar Mail
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -28,6 +30,9 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // ✅ Enviar alerta de inicio de sesión
+        Mail::to($request->user()->email)->send(new LoginAlertEmail($request->user()));
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
@@ -45,3 +50,4 @@ class AuthenticatedSessionController extends Controller
         return redirect('/');
     }
 }
+
